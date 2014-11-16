@@ -33,12 +33,13 @@ def main():
 
   # start the main loop
   results = []
+  modified = [False] * (n + 1)
   # getting the results
   while ( not k == 0 ):
 
     maxLeaf = employees[1]
     for leaf in leaves:
-      leaf.setTotalUtility( computeTotalUtility( leaf, employees ) )
+      leaf.setTotalUtility( computeTotalUtility( leaf, employees, modified ) )
       # leafBoss = employees[ leaf.getBossID() ]
       # leaf.setTotalUtility( leaf.getUtility() + leafBoss.getTotalUtility() )
       if ( leaf.getTotalUtility() > maxLeaf.getTotalUtility() ):
@@ -48,18 +49,17 @@ def main():
     results.append(maxLeaf.getTotalUtility())
 
     # setting everything in maxLeaf's path to 0 (just total utility).
+    modified = [False] * (n + 1)
     maxLeaf.setUtility( 0 )
     path = maxLeaf.getInfluencePath()
     for p in path:
+      if ( p == 1 ):
+        modified[ p ] = False
+      else:
+        modified[ p ] = True
       pathEmp = employees[ p ]
       pathEmp.setUtility( 0 )
       pathEmp.setTotalUtility( 0 )
-    # path = maxLeaf.getBossID()
-    # while ( not path == 0 ):
-    #   pathEmp = employees[path]
-    #   pathEmp.setUtility( 0 )
-    #   pathEmp.setTotalUtility( 0 )
-    #   path = employees[path].getBossID()
 
     # remove maxLeaf from leaves
     leaves.remove( maxLeaf )
@@ -164,19 +164,52 @@ def getLeaves( emps, leafEmps ):
   return result
 
 # computeTotalUtility()
-def computeTotalUtility( leaf, employees ):
-  result = leaf.getUtility()
+def computeTotalUtility( leaf, employees, modified ):
+  result          = leaf.getUtility()
+  path            = leaf.getInfluencePath()
+  pathLen         = len(path)
+  hasBeenModified = False
 
-  path = leaf.getBossID()
-  while ( not path == 0 ):
-    pathEmp = employees[path]
-    if ( pathEmp.getUtility() == 0 ):
+  # # go through the influence path
+  # i = pathLen
+  # while ( i >= 0 ):
+  #   i -= 1
+  #   if ( modified[ path[i] ] ):
+  #     hasBeenModified = True
+  #   elif ( hasBeenModified ):
+  #     break
+
+  # if ( hasBeenModified ):
+  #   sbtrkt = 0
+  #   while ( i < pathLen ):
+  #     empID = path[ i ]
+  #     sbtrkt += employees[ empID ].getUtility()
+  #     i += 1
+  #   leaf.setTotalUtility( leaf.getTotalUtility() - sbtrkt )
+
+  # # print leaf.getID()
+  # # print 'path length: ', pathLen
+  # # print 'subtraction: ', '' 
+  # # print 'total util:  ', leaf.getTotalUtility()
+  # # print '\n'
+
+  # return leaf.getTotalUtility()
+
+  for p in path: 
+    # if the path has been modified
+    if ( modified[ p ] ):
+      hasBeenModified = True
       break
+    # if it hasn't, keep recomputing the total utility.
     else:
-      result += pathEmp.getUtility()
-      path = pathEmp.getBossID()
+      result += employees[ p ].getUtility()
 
-  return result
+  # if the path has been modified, return the recomputed total utility.
+  if ( hasBeenModified ):
+    return result
+  # if it hasn't, nothing has changed. return its total utility.
+  else:
+    return leaf.getTotalUtility()
 
 # -----------------------------------------------------------------------------
 # EXECUTION
