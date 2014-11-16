@@ -1,0 +1,12 @@
+TODO: A write up of no more than 4 pages
+with description and analysis of your implementation.
+
+The following is expected:
+- A mathematical formulation of the problem to be solved
+- A high level, english description of the algo used
+- A pseudo code description of the algo
+- A proof of correctness of the algo
+- A run time analysis of the algo, accounting for
+  insert/query/ run times of data structures used
+
+  
