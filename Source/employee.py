@@ -17,9 +17,13 @@ class Employee:
   # ---------------------------------------------------------------------------
 
   def __init__( self, uID, bossID, utility ):
-    self.uID     = uID
-    self.bossID  = bossID
-    self.utility = utility
+    self.uID      = uID
+    self.bossID   = bossID
+    self.utility  = utility
+    if ( not bossID == 0 ):
+      self.influencePath = [bossID]
+    else:
+      self.influencePath = []
 
   def getID( self ):
     return self.uID

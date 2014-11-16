@@ -49,12 +49,17 @@ def main():
 
     # setting everything in maxLeaf's path to 0 (just total utility).
     maxLeaf.setUtility( 0 )
-    path = maxLeaf.getBossID()
-    while ( not path == 0 ):
-      pathEmp = employees[path]
+    path = maxLeaf.getInfluencePath()
+    for p in path:
+      pathEmp = employees[ p ]
       pathEmp.setUtility( 0 )
       pathEmp.setTotalUtility( 0 )
-      path = employees[path].getBossID()
+    # path = maxLeaf.getBossID()
+    # while ( not path == 0 ):
+    #   pathEmp = employees[path]
+    #   pathEmp.setUtility( 0 )
+    #   pathEmp.setTotalUtility( 0 )
+    #   path = employees[path].getBossID()
 
     # remove maxLeaf from leaves
     leaves.remove( maxLeaf )
@@ -66,17 +71,6 @@ def main():
     sumResult += r
 
   print sumResult
-
-
-
-
-  # TODO: RECOMPUTE LEAFS!!!
-
-
-  # TODO: get the max total utility
-  #       add to results
-  #       set all employees in path of max total utility to 0
-  # REPEAT! (for loop for k)
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
@@ -142,8 +136,7 @@ def readAndSetFromInput( inputFile ):
         curEmp.setTotalUtility( utility + employees[bossid].getTotalUtility() )
         leafEmployees[ bossid ] = False
         # setting the influence path.
-        # curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
-        # curEmp.appendToInfluence( bossid )
+        curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
       else:
         curEmp.setTotalUtility( utility )
       employees[ uid ] = curEmp
