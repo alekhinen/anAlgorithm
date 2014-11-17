@@ -24,22 +24,20 @@ def main():
   # set employees, which employees are leaves, n, and k.
   employees, leafEmployees, n, k = readAndSetFromInput( inputFile )
   print 'done with reading the file'
-  # for e in employees:
-  #   if ( e ):
-  #     print e.getInfluencePath(), '\n'
+
   # get the leaves from the employees list (using the leafEmployees list).
   leaves = getLeaves( employees, leafEmployees )
   print 'done with getting the leaves'
 
   # start the main loop
   results = []
-  modified = [False] * (n + 1)
+  # modified = [False] * (n + 1)
   # getting the results
   while ( not k == 0 ):
 
     maxLeaf = employees[1]
     for leaf in leaves:
-      leaf.setTotalUtility( computeTotalUtility( leaf, employees, modified ) )
+      # leaf.setTotalUtility( computeTotalUtility( leaf, employees, modified ) )
       # leafBoss = employees[ leaf.getBossID() ]
       # leaf.setTotalUtility( leaf.getUtility() + leafBoss.getTotalUtility() )
       if ( leaf.getTotalUtility() > maxLeaf.getTotalUtility() ):
@@ -49,7 +47,8 @@ def main():
     results.append(maxLeaf.getTotalUtility())
 
     # setting everything in maxLeaf's path to 0 (just total utility).
-    modified = [False] * (n + 1)
+    # modified = [False] * (n + 1)
+    modified = maxLeaf.getInfluencePath()
     maxLeaf.setUtility( 0 )
     path = maxLeaf.getInfluencePath()
     for p in path:
@@ -130,13 +129,15 @@ def readAndSetFromInput( inputFile ):
       utility = int( spline[2] )
       # init employee
       curEmp = Employee( uid, bossid, utility )
-      # set the total utility and influence path
+      # set the total utility, influence path, and children.
       if ( not bossid == 0 ):
         # setting the total utility.
         curEmp.setTotalUtility( utility + employees[bossid].getTotalUtility() )
         leafEmployees[ bossid ] = False
         # setting the influence path.
         curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
+        # add this employee to the boss' children
+        employees[ bossid ].appendChild( uid )
       else:
         curEmp.setTotalUtility( utility )
       employees[ uid ] = curEmp
@@ -195,21 +196,37 @@ def computeTotalUtility( leaf, employees, modified ):
 
   # return leaf.getTotalUtility()
 
-  for p in path: 
-    # if the path has been modified
-    if ( modified[ p ] ):
+
+  # WORKING (FAIRLY) FAST
+
+  i = 0
+  while ( i < pathLen ):
+    if ( modified[ path[i] ] ):
       hasBeenModified = True
       break
-    # if it hasn't, keep recomputing the total utility.
     else:
-      result += employees[ p ].getUtility()
+      result += employees[ path[i] ].getUtility()
+    i += 1
+  return result
 
-  # if the path has been modified, return the recomputed total utility.
-  if ( hasBeenModified ):
-    return result
-  # if it hasn't, nothing has changed. return its total utility.
-  else:
-    return leaf.getTotalUtility()
+
+  # WORKING
+
+  # for p in path: 
+  #   # if the path has been modified
+  #   if ( modified[ p ] ):
+  #     hasBeenModified = True
+  #     break
+  #   # if it hasn't, keep recomputing the total utility.
+  #   else:
+  #     result += employees[ p ].getUtility()
+
+  # # if the path has been modified, return the recomputed total utility.
+  # if ( hasBeenModified ):
+  #   return result
+  # # if it hasn't, nothing has changed. return its total utility.
+  # else:
+  #   return leaf.getTotalUtility()
 
 # -----------------------------------------------------------------------------
 # EXECUTION

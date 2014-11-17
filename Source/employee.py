@@ -11,6 +11,7 @@ class Employee:
   utility = 0
   totalUtility = 0
   influencePath = []
+  children = []
 
   # ---------------------------------------------------------------------------
   # METHODS
@@ -22,8 +23,10 @@ class Employee:
     self.utility  = utility
     if ( not bossID == 0 ):
       self.influencePath = [bossID]
+      self.children = []
     else:
       self.influencePath = []
+      self.children = []
 
   def getID( self ):
     return self.uID
@@ -40,6 +43,9 @@ class Employee:
   def getInfluencePath( self ):
     return self.influencePath
 
+  def getChildren( self ):
+    return self.children
+
   def setTotalUtility( self, n ):
     self.totalUtility = n
 
@@ -51,4 +57,7 @@ class Employee:
       self.influencePath.extend( path )
     else:
       self.influencePath.append( path )
+
+  def appendChild( self, child ):
+    self.children.append( child )
 
