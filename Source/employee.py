@@ -22,16 +22,25 @@ class Employee:
     self.uID      = uID
     self.bossID   = bossID
     self.utility  = utility
+    self.highestChild = 0
+    self.children = []
+
     if ( not bossID == 0 ):
       self.influencePath = [bossID]
-      self.children = []
-      self.highestChild = 0
     else:
       self.influencePath = []
-      self.children = []
-      self.highestChild = 0
 
   def __cmp__( self, other ):
+    # if ( len( self.influencePath ) - len( other.influencePath ) > 0 ):
+    #   return 1
+    # elif ( len( self.influencePath ) - len( other.influencePath ) < 0 ):
+    #   return -1
+    # elif ( self.hcTotalUtil > other.hcTotalUtil ):
+    #   return 1
+    # elif ( self.hcTotalUtil < other.hcTotalUtil ):
+    #   return -1
+    # else:
+    #   return 0
     return cmp( len( self.influencePath ), len( other.influencePath ) )
 
   def getID( self ):

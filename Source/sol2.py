@@ -12,6 +12,7 @@ import fileinput
 import sys
 import os.path
 import heapq
+import bisect
 from employee import Employee
 
 # -----------------------------------------------------------------------------
@@ -23,19 +24,22 @@ def main():
   # parse and validate system arguments.
   inputFile, outputFile = parseArgs( sys.argv )
   # set employees, which employees are leaves, n, and k.
-  employees, leafEmployees, n, k = readAndSetFromInput( inputFile )
+  employees, n, k = readAndSetFromInput( inputFile )
   print 'done with reading the file'
   
   oEmployees = []
   for e in employees:
+    # if e:
+    # print e.getID(), e.getHighestChild(), e.getInfluencePath()
     oEmployees.append( e )
 
   employees.pop(0)
   heapq.heapify( employees )
   print 'done with heapifying the employees'
 
-  result = 0 
-  while employees and k > 0:
+  result = []
+  # while employees and k > 0:
+  while employees:
     # get the top element
     e = heapq.heappop( employees ) 
     eID = e.getID()
@@ -43,6 +47,7 @@ def main():
     while ( not oEmployees[ eID ] ):
       e = heapq.heappop( employees )
       eID = e.getID()
+    # print eID
     # get the highest child of the top element
     highestChild = e.getHighestChild()
     hC = oEmployees[ highestChild ]
@@ -50,7 +55,7 @@ def main():
     # if the highest child exists
     if ( hC ):
       # add highest child's utility result
-      result += hC.getUtility()
+      subResult = hC.getUtility()
 
       # add each element's utility in path to result.
       # remove all elements from highest child's path.
@@ -58,17 +63,33 @@ def main():
       for p in path:
         curEmp = oEmployees[ p ]
         if ( curEmp ):
-          result += curEmp.getUtility()
+          subResult += curEmp.getUtility()
         oEmployees[ p ] = False
 
+      # sorted insert into result
+      bisect.insort( result, subResult )
+
       # decrement k
-      k = k - 1
-      
+      # k = k - 1
+
+    # else if the top element has no children, just add itself to the result
+    elif ( highestChild == 0 ):
+      bisect.insort( result, e.getUtility() )
+      # k = k - 1
+
     # remove highest child and top element from oEmployees.
     oEmployees[ highestChild ] = False
     oEmployees[ eID ] = False
 
-  print result
+  i = len(result) - 1
+  sumResult = 0
+  while ( k > 0 ):
+    sumResult += result[i]
+    i = i - 1
+    k = k - 1
+
+
+  print sumResult
 
     
 
@@ -112,8 +133,6 @@ def readAndSetFromInput( inputFile ):
   k = 0
   # the employees
   employees = []
-  # boolean if employee at index is a leaf
-  leafEmployees = []
 
   # read the lines from the input file
   for line in fileinput.input( inputFile ):
@@ -135,7 +154,6 @@ def readAndSetFromInput( inputFile ):
       if ( not bossid == 0 ):
         # setting the total utility.
         curEmp.setTotalUtility( utility + employees[bossid].getTotalUtility() )
-        leafEmployees[ bossid ] = False
         # setting the influence path.
         curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
         # add this employee to the boss' children
@@ -150,14 +168,13 @@ def readAndSetFromInput( inputFile ):
           else:
             if ( employees[ hC ].getTotalUtility() < curEmp.getTotalUtility() ):
               employees[ e ].setHighestChild( curEmp.getID() )
-
       else:
         curEmp.setTotalUtility( utility )
       employees[ uid ] = curEmp
 
     i += 1
 
-  return employees, leafEmployees, n, k
+  return employees, n, k
 
 
 # -----------------------------------------------------------------------------
