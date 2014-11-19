@@ -11,6 +11,7 @@
 import fileinput
 import sys
 import os.path
+import heapq
 from employee import Employee
 
 # -----------------------------------------------------------------------------
@@ -24,49 +25,53 @@ def main():
   # set employees, which employees are leaves, n, and k.
   employees, leafEmployees, n, k = readAndSetFromInput( inputFile )
   print 'done with reading the file'
-  # get the leaves from the employees list (using the leafEmployees list).
-  leaves = getLeaves( employees, leafEmployees )
-  print 'done with getting the leaves'
+  
+  oEmployees = []
+  for e in employees:
+    oEmployees.append( e )
 
-  # start the main loop
-  results = []
-  modified = [False] * (n + 1)
-  # getting the results
-  while ( not k == 0 ):
+  employees.pop(0)
+  heapq.heapify( employees )
+  print 'done with heapifying the employees'
 
-    # find the leaf with the maximum total utility
-    maxLeaf = employees[1]
-    for leaf in leaves:
-      leaf.setTotalUtility( computeTotalUtility( leaf, employees, modified ) )
-      if ( leaf.getTotalUtility() > maxLeaf.getTotalUtility() ):
-        maxLeaf = leaf
+  result = 0 
+  while employees and k > 0:
+    # get the top element
+    e = heapq.heappop( employees ) 
+    eID = e.getID()
+    # if the top element has already been used, find the next biggest
+    while ( not oEmployees[ eID ] ):
+      e = heapq.heappop( employees )
+      eID = e.getID()
+    # get the highest child of the top element
+    highestChild = e.getHighestChild()
+    hC = oEmployees[ highestChild ]
+    
+    # if the highest child exists
+    if ( hC ):
+      # add highest child's utility result
+      result += hC.getUtility()
 
-    # append the max leaf's utility to the results array
-    results.append(maxLeaf.getTotalUtility())
+      # add each element's utility in path to result.
+      # remove all elements from highest child's path.
+      path = hC.getInfluencePath()
+      for p in path:
+        curEmp = oEmployees[ p ]
+        if ( curEmp ):
+          result += curEmp.getUtility()
+        oEmployees[ p ] = False
 
-    # set everything in maxLeaf's path to 0 (just total utility).
-    modified = [False] * (n + 1)
-    maxLeaf.setUtility( 0 )
-    path = maxLeaf.getInfluencePath()
-    for p in path:
-      if ( p == 1 ):
-        modified[ p ] = False
-      else:
-        modified[ p ] = True
-      pathEmp = employees[ p ]
-      pathEmp.setUtility( 0 )
-      # pathEmp.setTotalUtility( 0 )
+      # decrement k
+      k = k - 1
+      
+    # remove highest child and top element from oEmployees.
+    oEmployees[ highestChild ] = False
+    oEmployees[ eID ] = False
 
-    # remove maxLeaf from leaves
-    leaves.remove( maxLeaf )
-    # decrement k
-    k -= 1
+  print result
 
-  sumResult = 0
-  for r in results:
-    sumResult += r
+    
 
-  print sumResult
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
@@ -84,10 +89,10 @@ def parseArgs( sysArgs ):
     outputFile = sysArgs[2]
     if ( not os.path.exists( inputFile ) ):
       print 'ERROR: input file does not exist. aborting.'
-      sys.exit(2)
+      sys.exit(1)
   else:
     print 'ERROR: Improper input. Please supply one input file and one output.'
-    sys.exit(1)
+    sys.exit(2)
 
   return inputFile, outputFile
 
@@ -135,6 +140,17 @@ def readAndSetFromInput( inputFile ):
         curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
         # add this employee to the boss' children
         employees[ bossid ].appendChild( uid )
+
+        # setting the highest child for everything in the influence path.
+        infPath = curEmp.getInfluencePath()
+        for e in infPath:
+          hC = employees[ e ].getHighestChild()
+          if ( hC == 0 ):
+            employees[ e ].setHighestChild( curEmp.getID() )
+          else:
+            if ( employees[ hC ].getTotalUtility() < curEmp.getTotalUtility() ):
+              employees[ e ].setHighestChild( curEmp.getID() )
+
       else:
         curEmp.setTotalUtility( utility )
       employees[ uid ] = curEmp
@@ -143,87 +159,6 @@ def readAndSetFromInput( inputFile ):
 
   return employees, leafEmployees, n, k
 
-# -----------------------------------------------------------------------------
-# MAIN LOOP HELPER METHODS
-# -----------------------------------------------------------------------------
-
-# getLeaves()
-def getLeaves( emps, leafEmps ):
-  result = []
-  empsLen = len(emps)
-  leafEmpsLen = len(leafEmps)
-
-  i = 0
-  while ( i < empsLen and i < leafEmpsLen ):
-    if ( leafEmps[ i ] and not i == 0 ):
-      result.append( emps[ i ] )
-    i += 1
-
-  return result
-
-# computeTotalUtility()
-def computeTotalUtility( leaf, employees, modified ):
-  result          = leaf.getUtility()
-  path            = leaf.getInfluencePath()
-  pathLen         = len(path)
-  hasBeenModified = False
-
-  # # go through the influence path
-  # i = pathLen
-  # while ( i >= 0 ):
-  #   i -= 1
-  #   if ( modified[ path[i] ] ):
-  #     hasBeenModified = True
-  #   elif ( hasBeenModified ):
-  #     break
-
-  # if ( hasBeenModified ):
-  #   sbtrkt = 0
-  #   while ( i < pathLen ):
-  #     empID = path[ i ]
-  #     sbtrkt += employees[ empID ].getUtility()
-  #     i += 1
-  #   leaf.setTotalUtility( leaf.getTotalUtility() - sbtrkt )
-
-  # # print leaf.getID()
-  # # print 'path length: ', pathLen
-  # # print 'subtraction: ', '' 
-  # # print 'total util:  ', leaf.getTotalUtility()
-  # # print '\n'
-
-  # return leaf.getTotalUtility()
-
-
-  # WORKING (FAIRLY) FAST
-
-  i = 0
-  while ( i < pathLen ):
-    if ( modified[ path[i] ] ):
-      hasBeenModified = True
-      break
-    else:
-      result += employees[ path[i] ].getUtility()
-    i += 1
-  return result
-
-
-  # WORKING
-
-  # for p in path: 
-  #   # if the path has been modified
-  #   if ( modified[ p ] ):
-  #     hasBeenModified = True
-  #     break
-  #   # if it hasn't, keep recomputing the total utility.
-  #   else:
-  #     result += employees[ p ].getUtility()
-
-  # # if the path has been modified, return the recomputed total utility.
-  # if ( hasBeenModified ):
-  #   return result
-  # # if it hasn't, nothing has changed. return its total utility.
-  # else:
-  #   return leaf.getTotalUtility()
 
 # -----------------------------------------------------------------------------
 # EXECUTION
