@@ -29,8 +29,6 @@ def main():
   
   oEmployees = []
   for e in employees:
-    # if e:
-    # print e.getID(), e.getHighestChild(), e.getInfluencePath()
     oEmployees.append( e )
 
   employees.pop(0)
@@ -44,7 +42,7 @@ def main():
     e = heapq.heappop( employees ) 
     eID = e.getID()
     # if the top element has already been used, find the next biggest
-    while ( not oEmployees[ eID ] ):
+    while ( not oEmployees[ eID ] and employees ):
       e = heapq.heappop( employees )
       eID = e.getID()
     # print eID
@@ -90,9 +88,6 @@ def main():
 
 
   print sumResult
-
-    
-
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
@@ -175,7 +170,6 @@ def readAndSetFromInput( inputFile ):
     i += 1
 
   return employees, n, k
-
 
 # -----------------------------------------------------------------------------
 # EXECUTION
