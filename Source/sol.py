@@ -11,9 +11,7 @@
 # IMPORTS
 # -----------------------------------------------------------------------------
 
-import fileinput
 import sys
-import os.path
 import heapq
 import bisect
 from employee import Employee
@@ -25,9 +23,9 @@ from employee import Employee
 # main()
 def main():
   # parse and validate system arguments.
-  inputFile, outputFile = parseArgs( sys.argv )
+  # inputFile, outputFile = parseArgs( sys.argv )
   # set employees, n, and k.
-  employeesPQ, n, k = readAndSetFromInput( inputFile )
+  employeesPQ, n, k = readAndSetFromInput()
 
   # employees is a list of employees (index == employee id)
   employees = []
@@ -87,30 +85,11 @@ def main():
     i = i - 1
     k = k - 1
 
-  print sumResult
+  sys.stdout.write( str(sumResult) )
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
 # -----------------------------------------------------------------------------
-
-# parseArgs()
-# @description: parses system arguments from command-line
-# @param: sysArgs - an array of system arguments
-# @returns: two strings corresponding to the input file and output file.
-# @author: Nick Alekhine
-# @version: 15-11-2014 (DD-MM-YYYY)
-def parseArgs( sysArgs ):
-  if ( len(sysArgs) == 3 ):
-    inputFile = sysArgs[1]
-    outputFile = sysArgs[2]
-    if ( not os.path.exists( inputFile ) ):
-      print 'ERROR: input file does not exist. aborting.'
-      sys.exit(1)
-  else:
-    print 'ERROR: Improper input. Please supply one input file and one output.'
-    sys.exit(2)
-
-  return inputFile, outputFile
 
 # parseArgs()
 # @description: reads and sets a bunch of stuff
@@ -121,7 +100,7 @@ def parseArgs( sysArgs ):
 #           k (amount of employees the algo can use)
 # @author: Nick Alekhine
 # @version: 16-11-2014 (DD-MM-YYYY)
-def readAndSetFromInput( inputFile ):
+def readAndSetFromInput():
   # setting up the basics
   i = 0
   n = 0
@@ -130,7 +109,7 @@ def readAndSetFromInput( inputFile ):
   employees = []
 
   # read the lines from the input file
-  for line in fileinput.input( inputFile ):
+  for line in sys.stdin:
     spline = line.split()
     # if we're at the first line, read the n val and the k val
     if ( i == 0 ):
