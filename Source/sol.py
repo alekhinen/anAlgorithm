@@ -1,8 +1,11 @@
+#!/usr/bin/env python
 # sol
 # @description: An algorithm that maximizes the total utility
 #               of influencing people in a company hierarchy.
 # @author: Nick Alekhine
 # @version: 15-11-2014
+
+# WRITE TO STDIN and STDOUT
 
 # -----------------------------------------------------------------------------
 # IMPORTS
@@ -83,7 +86,6 @@ def main():
     sumResult += result[i]
     i = i - 1
     k = k - 1
-
 
   print sumResult
 

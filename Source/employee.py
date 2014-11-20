@@ -31,16 +31,6 @@ class Employee:
       self.influencePath = []
 
   def __cmp__( self, other ):
-    # if ( len( self.influencePath ) - len( other.influencePath ) > 0 ):
-    #   return 1
-    # elif ( len( self.influencePath ) - len( other.influencePath ) < 0 ):
-    #   return -1
-    # elif ( self.hcTotalUtil > other.hcTotalUtil ):
-    #   return 1
-    # elif ( self.hcTotalUtil < other.hcTotalUtil ):
-    #   return -1
-    # else:
-    #   return 0
     return cmp( len( self.influencePath ), len( other.influencePath ) )
 
   def getID( self ):
