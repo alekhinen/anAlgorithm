@@ -85,7 +85,7 @@ def main():
     i = i - 1
     k = k - 1
 
-  sys.stdout.write( str(sumResult) )
+  sys.stdout.write( str(sumResult) + '\n' )
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
