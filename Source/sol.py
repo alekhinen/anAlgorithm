@@ -51,7 +51,12 @@ def main():
   # write the result
   sys.stdout.write( str(sumResult) + '\n' )
 
-
+# getAllTotalUtilities()
+# @param: employeesPQ - a priority queue of employees
+# @param: employees - a list structure of employees
+# @description: adds the total utility of the highest child of every employee
+#               to a sorted list.
+# @returns: list of numbers (sorted)
 def getAllTotalUtilities( employeesPQ, employees ):
   result = []
 
