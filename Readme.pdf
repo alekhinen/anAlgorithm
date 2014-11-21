@@ -9,4 +9,7 @@ The following is expected:
 - A run time analysis of the algo, accounting for
   insert/query/ run times of data structures used
 
-  
+sol at a high level:
+- pipes in data from a text file
+- reads data line by line, adding each line of data as an instance
+- of an employee class to a list of a employees
