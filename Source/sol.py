@@ -32,11 +32,29 @@ def main():
   for e in employeesPQ:
     employees.append( e )
 
-  # heapify the employees priority queue
+  # remove the 0th employee
   employeesPQ.pop(0)
+  # heapify the employees priority queue
   heapq.heapify( employeesPQ )
 
+  # get all the total utilities (sorted by total utility ascending)
+  result = getAllTotalUtilities( employeesPQ, employees )
+
+  # get the top k total utilities
+  i = len(result) - 1
+  sumResult = 0
+  while ( k > 0 ):
+    sumResult += result[i]
+    i = i - 1
+    k = k - 1
+
+  # write the result
+  sys.stdout.write( str(sumResult) + '\n' )
+
+
+def getAllTotalUtilities( employeesPQ, employees ):
   result = []
+
   # while there are employees in the priority queue:
   while employeesPQ:
     # pop the top element
@@ -78,14 +96,7 @@ def main():
     employees[ highestChild ] = False
     employees[ eID ] = False
 
-  i = len(result) - 1
-  sumResult = 0
-  while ( k > 0 ):
-    sumResult += result[i]
-    i = i - 1
-    k = k - 1
-
-  sys.stdout.write( str(sumResult) + '\n' )
+  return result
 
 # -----------------------------------------------------------------------------
 # PRE-COMPUTATION METHODS
