@@ -5,8 +5,6 @@
 # @author: Nick Alekhine
 # @version: 15-11-2014
 
-# WRITE TO STDIN and STDOUT
-
 # -----------------------------------------------------------------------------
 # IMPORTS
 # -----------------------------------------------------------------------------
@@ -111,7 +109,6 @@ def getAllTotalUtilities( employeesPQ, employees ):
 # @description: reads and sets a bunch of stuff
 # @param: inputFile - a string filepath to the input file
 # @returns: employees [list of employees]
-#           leafEmployees [list of boolean] (corresponds to employee id)
 #           n (number of employees)
 #           k (amount of employees the algo can use)
 # @author: Nick Alekhine
@@ -132,7 +129,6 @@ def readAndSetFromInput():
       n = int( spline[0] )
       k = int( spline[1] )
       employees = [False] * (n + 1)
-      leafEmployees = [True] * (n + 1)
     # start setting the employees
     else:
       uid     = int( spline[0] )
@@ -148,16 +144,19 @@ def readAndSetFromInput():
         curEmp.appendToInfluence( employees[ bossid ].getInfluencePath() )
         # add this employee to the boss' children
         employees[ bossid ].appendChild( uid )
-
-        # setting the highest child for everything in the influence path.
+        # setting the highest child for everyone in the influence path.
         infPath = curEmp.getInfluencePath()
         for e in infPath:
           hC = employees[ e ].getHighestChild()
+          # if there's no highest child, set it to the current employee.
           if ( hC == 0 ):
             employees[ e ].setHighestChild( curEmp.getID() )
-          else:
-            if ( employees[ hC ].getTotalUtility() < curEmp.getTotalUtility() ):
-              employees[ e ].setHighestChild( curEmp.getID() )
+          # else if the current highest child has a lesser value than the
+          # current employee, set the employee's highest child to the current
+          # employee.
+          elif ( employees[ hC ].getTotalUtility() < curEmp.getTotalUtility() ):
+            employees[ e ].setHighestChild( curEmp.getID() )
+      # else we're at the CEO, set the total utility to be the utility.
       else:
         curEmp.setTotalUtility( utility )
       employees[ uid ] = curEmp
