@@ -1,0 +1,61 @@
+TODO: A write up of no more than 4 pages
+with description and analysis of your implementation.
+
+The following is expected:
+- A mathematical formulation of the problem to be solved
+- A high level, english description of the algo used
+- A pseudo code description of the algo
+- A proof of correctness of the algo
+- A run time analysis of the algo, accounting for
+  insert/query/ run times of data structures used
+
+------------------------
+MATHEMATICAL FORMULATION
+------------------------
+TODO: gotta do this
+
+
+------------------------------
+HIGH LEVEL ENGLISH DESCRIPTION
+------------------------------
+sol at a high level:
+- pipes in data from a text file
+- reads data line by line, adding each line of data as an instance
+  of an employee class to a list of a employees.
+  - each employee has a:
+    - unique id
+    - boss id 
+    - utility
+    - total utility
+    - children
+    - influence path
+- all employees have been added to a list
+- a priority queue is built off of this list (same structure as company hierarchy)
+- while there are still employees in the priority queue:
+  - pop the top
+  - get the highest child
+  - sum up the utility of everyone in the influence path of the highest child (if hasn't been used yet)
+  - append result to a result list
+  - mark the top, highest child, and everyone in the influence path as
+    already used
+  - repeat. 
+- pick the k highest values in the results list
+- sum up these values. return the summed value
+
+-----------------------
+PSEUDO-CODE DESCRIPTION
+-----------------------
+TODO: use some of the high level description in this
+
+
+---------------------
+RUNNING TIME ANALYSIS
+---------------------
+Reading files from input, adding to employees list ( O(n) )
+Creating priority queue from employees list ( O(n) )
+Main loop of algorithm ( O(n) )
+  summing up everyone in influence path ( ??? )
+  TODO: are we talking n^2 in the worst case here?
+Get the k biggest values from RESULT ( O(k) )
+
+running time: ( O( n * (height of priority queue)) )
